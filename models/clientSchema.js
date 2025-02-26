@@ -20,10 +20,6 @@ const ClientSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please enter type'],
     },
-    date:{
-        type: String,
-        required: [true, 'Select enter Date'],
-    },
     schemes:{
         type: String,
         required: [true, 'Please enter schemes'],
