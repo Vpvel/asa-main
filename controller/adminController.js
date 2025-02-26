@@ -57,8 +57,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
             message: "Login successful"
         });
     } else {
-        res.status(401); // Unauthorized
-        throw new Error("Invalid credentials");
+        res.status(401).json({ message: "Invalid credentials" }); // Unauthorized
     }
 });
 
