@@ -39,7 +39,7 @@ const getCltDtl = asyncHandler(async (req, res) => {
 
         // Default values if parameters are not provided
         page = parseInt(page) || 1; // Default: Page 1
-        limit = parseInt(limit) || 20; // Default: 20 records per page
+        limit = parseInt(limit) || 100; // Default: 20 records per page
         sortBy = sortBy || 'createdAt'; // Default sorting field is 'createdAt'
         sortOrder = sortOrder === 'desc' ? -1 : 1; // Default: ascending order
 
