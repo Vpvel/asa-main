@@ -2,7 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Client = require('../models/clientSchema');
 
 const createClient = asyncHandler(async(req, res)=>{
-    const {name, amount, email,phone_number,select_type,schemes,paymentId} = req.body;
+    const {name, amount, email,phone_number,select_type,schemes,paymentId,paymentStatus} = req.body;
  
     const newClient = await Client.create({
         name: name,
@@ -12,6 +12,8 @@ const createClient = asyncHandler(async(req, res)=>{
         select_type:select_type,
         schemes:schemes,
         paymentId:paymentId,
+        paymentStatus:paymentStatus
+        
     });
     if(newClient){
         res.status(200).json({_id: newClient.id, name: newClient.name})
