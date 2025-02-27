@@ -20,13 +20,17 @@ const ClientSchema = mongoose.Schema({
         type: String,
         required: [true, 'Please enter type'],
     },
-    schemes:{
+     schemes:{
         type: String,
         required: [true, 'Please enter schemes'],
     },
-     paymentId:{
+    paymentId:{
         type: String,
         required: [true, 'Please enter paymentId'],
+    },
+    paymentStatus:{
+        type: String,
+        required: [true, 'Please enter paymentStatus'],
     },
     createdAt: { type: Date, default: Date.now } // Default timestamp
 
