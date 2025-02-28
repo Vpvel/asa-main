@@ -101,4 +101,4 @@ const deleteAll = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { createClient, getClients,getCltDtl,deleteAll}
+module.exports = { createClient, getClients,getCltDtl,deleteAll,getClientsfilters}
