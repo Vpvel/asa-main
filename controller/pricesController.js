@@ -2,11 +2,11 @@ const asyncHandler = require('express-async-handler');
 const Prices = require('../models/priceSchema');
 
 const createSchema = asyncHandler(async (req, res) => {
-    const { golden, sliver,chittu } = req.body;
+    const { golden, silver,chittu } = req.body;
 
     const newPrice = await Prices.create({
         golden: golden,
-        sliver: sliver,
+        silver: silver,
         chittu: chittu,
     });
     if (newPrice) {
