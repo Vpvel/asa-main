@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.post('/prices', createSchema);
 router.get('/getprices',getPrices)
-router.post('/getPricesfilter',getPricesfilter)
+router.get('/getPricesfilter',getPricesfilter)
 
 
 module.exports = router;
