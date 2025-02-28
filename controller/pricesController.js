@@ -30,10 +30,15 @@ const getPrices = asyncHandler(async(req, res)=>{
 
 const getPricesfilter = asyncHandler(async (req, res) => {
     try {
-        const { date } = req.query; // Expecting 'date' in 'DD-MM-YYYY' format
+        let { date } = req.query; // Expecting 'date' in 'DD-MM-YYYY' format
 
+        // If no date is provided, use the current date (in DD-MM-YYYY format)
         if (!date) {
-            return res.status(400).json({ message: "Date is required" });
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = now.getFullYear();
+            date = `${day}-${month}-${year}`; // Format as 'DD-MM-YYYY'
         }
 
         // Convert 'DD-MM-YYYY' to a Date range (start & end of the day)
@@ -52,7 +57,6 @@ const getPricesfilter = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 });
-
 
 
 
