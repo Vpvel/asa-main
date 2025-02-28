@@ -81,20 +81,26 @@ const getclientfilters = asyncHandler(async (req, res) => {
         let filter = {}; // Default filter (empty if no dates are provided)
 
         if (fromDate && toDate) {
-            // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD' format
+            // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD'
             const [fromDay, fromMonth, fromYear] = fromDate.split("-");
             const [toDay, toMonth, toYear] = toDate.split("-");
 
+            // Ensure valid date format
             const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
             const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
 
-            // Ensure valid date objects are created
-            if (!isNaN(startDate) && !isNaN(endDate)) {
-                filter.createdAt = { $gte: startDate, $lte: endDate };
-            } else {
+            // Debugging Logs
+            console.log("Start Date:", startDate, "| Type:", typeof startDate);
+            console.log("End Date:", endDate, "| Type:", typeof endDate);
+
+            if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
                 return res.status(400).json({ message: "Invalid date format" });
             }
+
+            filter.createdAt = { $gte: startDate, $lte: endDate };
         }
+
+        console.log("MongoDB Query Filter:", JSON.stringify(filter));
 
         // Fetch records based on filter
         const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
@@ -105,6 +111,7 @@ const getclientfilters = asyncHandler(async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 });
+
 
 
 
