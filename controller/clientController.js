@@ -78,37 +78,43 @@ const getclientfilters = asyncHandler(async (req, res) => {
     try {
         const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
 
+        console.log("Received Dates => From:", fromDate, "To:", toDate);
+
         let filter = {}; // Default filter (empty if no dates are provided)
 
         if (fromDate && toDate) {
-            // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD'
             const [fromDay, fromMonth, fromYear] = fromDate.split("-");
             const [toDay, toMonth, toYear] = toDate.split("-");
 
-            // Ensure valid date format
+            if (!fromDay || !fromMonth || !fromYear || !toDay || !toMonth || !toYear) {
+                return res.status(400).json({ message: "Invalid date format. Expected DD-MM-YYYY" });
+            }
+
+            // Convert to proper Date format
             const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
             const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
 
-            // Debugging Logs
-            console.log("Start Date:", startDate, "| Type:", typeof startDate);
-            console.log("End Date:", endDate, "| Type:", typeof endDate);
-
             if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-                return res.status(400).json({ message: "Invalid date format" });
+                console.error("❌ Invalid Date Conversion:", { startDate, endDate });
+                return res.status(400).json({ message: "Invalid date provided. Expected format: DD-MM-YYYY" });
             }
+
+
+            console.log("Parsed Start Date:", startDate.toISOString());
+            console.log("Parsed End Date:", endDate.toISOString());
 
             filter.createdAt = { $gte: startDate, $lte: endDate };
         }
 
-        console.log("MongoDB Query Filter:", JSON.stringify(filter));
+        console.log("MongoDB Filter:", JSON.stringify(filter));
 
         // Fetch records based on filter
-        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
-     //  const clients = await Client.find({ createdAt: { $gte: ISODate("2025-02-25T00:00:00.000Z"), $lte: ISODate("2025-02-27T23:59:59.999Z") } }).sort({ createdAt: -1 })
+        const clients = await Client.find(filter).sort({ createdAt: -1 });
+
         res.json(clients);
     } catch (error) {
-        console.error("Error Fetching Clients:", error);
-        res.status(500).json({ message: "Server Error" });
+             console.error("Error Fetching Clients:", error);
+        next(error); // Pass error to Express error handler
     }
 });
 
