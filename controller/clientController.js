@@ -61,30 +61,60 @@ const getCltDtl = asyncHandler(async (req, res) => {
 
 const getClientsfilters = asyncHandler(async (req, res) => {
     try {
+       // const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
+
+        // let filter = {}; // Default filter (empty if no dates are provided)
+
+        // if (fromDate && toDate) {
+        //     // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD' format
+        //     const [fromDay, fromMonth, fromYear] = fromDate.split("-");
+        //     const [toDay, toMonth, toYear] = toDate.split("-");
+
+        //     const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
+        //     const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
+
+        //     // Ensure valid date objects are created
+        //     if (!isNaN(startDate) && !isNaN(endDate)) {
+        //         filter.createdAt = { $gte: startDate, $lte: endDate };
+        //     } else {
+        //         return res.status(400).json({ message: "Invalid date format" });
+        //     }
+        // }
+
+        // // Fetch records based on filter
+        // const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+
+        // res.json(clients);
+
         const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
 
-        let filter = {}; // Default filter (empty if no dates are provided)
+let filter = {}; // Default filter (empty if no dates are provided)
 
-        if (fromDate && toDate) {
-            // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD' format
-            const [fromDay, fromMonth, fromYear] = fromDate.split("-");
-            const [toDay, toMonth, toYear] = toDate.split("-");
+if (fromDate || toDate) {
+    try {
+        const parseDate = (dateStr, isStart) => {
+            const [day, month, year] = dateStr.split("-");
+            return new Date(`${year}-${month}-${day}T${isStart ? "00:00:00.000Z" : "23:59:59.999Z"}`);
+        };
 
-            const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
-            const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
+        const startDate = fromDate ? parseDate(fromDate, true) : null;
+        const endDate = toDate ? parseDate(toDate, false) : null;
 
-            // Ensure valid date objects are created
-            if (!isNaN(startDate) && !isNaN(endDate)) {
-                filter.createdAt = { $gte: startDate, $lte: endDate };
-            } else {
-                return res.status(400).json({ message: "Invalid date format" });
-            }
-        }
+        if (startDate && isNaN(startDate.getTime())) throw new Error("Invalid fromDate format");
+        if (endDate && isNaN(endDate.getTime())) throw new Error("Invalid toDate format");
 
-        // Fetch records based on filter
-        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+        filter.createdAt = {};
+        if (startDate) filter.createdAt.$gte = startDate;
+        if (endDate) filter.createdAt.$lte = endDate;
+    } catch (error) {
+        return res.status(400).json({ message: error.message });
+    }
+}
 
-        res.json(clients);
+// Fetch records based on filter
+const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+
+res.json(clients);
     } catch (error) {
         console.error("Error Fetching Clients:", error);
         res.status(500).json({ message: "Server Error" });
