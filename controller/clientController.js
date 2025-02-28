@@ -74,7 +74,7 @@ const deleteAll = asyncHandler(async (req, res) => {
     }
 });
 
-const getClientsFilters = asyncHandler(async (req, res) => {
+const getclientfilters = asyncHandler(async (req, res) => {
     try {
         const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
 
@@ -108,4 +108,4 @@ const getClientsFilters = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { createClient, getClients,getCltDtl,deleteAll,getClientsFilters}
+module.exports = { createClient, getClients,getCltDtl,deleteAll,getclientfilters}
