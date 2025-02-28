@@ -103,8 +103,8 @@ const getclientfilters = asyncHandler(async (req, res) => {
         console.log("MongoDB Query Filter:", JSON.stringify(filter));
 
         // Fetch records based on filter
-        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
-
+     //   const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+       const clients = await Client.find({ createdAt: { $gte: ISODate("2025-02-25T00:00:00.000Z"), $lte: ISODate("2025-02-27T23:59:59.999Z") } }).sort({ createdAt: -1 })
         res.json(clients);
     } catch (error) {
         console.error("Error Fetching Clients:", error);
