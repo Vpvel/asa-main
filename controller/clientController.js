@@ -66,14 +66,19 @@ const getClientsfilters = asyncHandler(async (req, res) => {
         let filter = {}; // Default filter (empty if no dates are provided)
 
         if (fromDate && toDate) {
-            // Convert 'DD-MM-YYYY' to valid Date format
+            // Convert 'DD-MM-YYYY' to 'YYYY-MM-DD' format
             const [fromDay, fromMonth, fromYear] = fromDate.split("-");
             const [toDay, toMonth, toYear] = toDate.split("-");
 
             const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
             const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
 
-            filter.createdAt = { $gte: startDate, $lte: endDate };
+            // Ensure valid date objects are created
+            if (!isNaN(startDate) && !isNaN(endDate)) {
+                filter.createdAt = { $gte: startDate, $lte: endDate };
+            } else {
+                return res.status(400).json({ message: "Invalid date format" });
+            }
         }
 
         // Fetch records based on filter
@@ -81,10 +86,11 @@ const getClientsfilters = asyncHandler(async (req, res) => {
 
         res.json(clients);
     } catch (error) {
-        console.log("Error Fetching Clients", error);
+        console.error("Error Fetching Clients:", error);
         res.status(500).json({ message: "Server Error" });
     }
 });
+
 
 
 const deleteAll = asyncHandler(async (req, res) => {
