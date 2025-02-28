@@ -34,6 +34,7 @@ app.use("/token", require('./routes/tokenRoutes'));
 app.use("/client", require('./routes/clientRoutes'));
 app.use("/admin", require('./routes/adminRoutes'));
 app.use("/payment", require('./routes/paymentRoutes'));
+app.use("/prices", require('./routes/pricesRoutes'));
 
 const port = process.env.PORT || 5000;
 app.listen(port, ()=>{
