@@ -59,6 +59,33 @@ const getCltDtl = asyncHandler(async (req, res) => {
     }
 });
 
+const getClientsfilters = asyncHandler(async (req, res) => {
+    try {
+        const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
+
+        let filter = {}; // Default filter (empty if no dates are provided)
+
+        if (fromDate && toDate) {
+            // Convert 'DD-MM-YYYY' to valid Date format
+            const [fromDay, fromMonth, fromYear] = fromDate.split("-");
+            const [toDay, toMonth, toYear] = toDate.split("-");
+
+            const startDate = new Date(`${fromYear}-${fromMonth}-${fromDay}T00:00:00.000Z`);
+            const endDate = new Date(`${toYear}-${toMonth}-${toDay}T23:59:59.999Z`);
+
+            filter.createdAt = { $gte: startDate, $lte: endDate };
+        }
+
+        // Fetch records based on filter
+        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+
+        res.json(clients);
+    } catch (error) {
+        console.log("Error Fetching Clients", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+});
+
 
 const deleteAll = asyncHandler(async (req, res) => {
     try {
