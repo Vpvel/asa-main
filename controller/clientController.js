@@ -59,54 +59,45 @@ const getCltDtl = asyncHandler(async (req, res) => {
     }
 });
 
-const getClientsfilters = asyncHandler(async (req, res) => {
+const getClientsFilters = asyncHandler(async (req, res) => {
     try {
-      const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
+        const { fromDate, toDate } = req.query; // Expecting 'DD-MM-YYYY' format
+        let filter = {}; // Default filter (empty if no dates are provided)
 
-let filter = {}; // Default filter (empty if no dates are provided)
+        // Regular expression to validate 'DD-MM-YYYY' format
+        const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
 
-// Regular expression to validate 'DD-MM-YYYY' format
-const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-
-if (fromDate || toDate) {
-    try {
+        // Function to parse and validate date
         const parseDate = (dateStr, isStart) => {
-            if (!dateStr || !dateRegex.test(dateStr)) throw new Error(`Invalid date format: ${dateStr}`);
+            if (!dateStr || !dateRegex.test(dateStr)) {
+                throw new Error(`Invalid date format: ${dateStr}. Expected format: DD-MM-YYYY`);
+            }
 
             const [day, month, year] = dateStr.split("-");
             const parsedDate = new Date(`${year}-${month}-${day}T${isStart ? "00:00:00.000Z" : "23:59:59.999Z"}`);
 
-            if (isNaN(parsedDate.getTime())) throw new Error(`Invalid date value: ${dateStr}`);
+            if (isNaN(parsedDate.getTime())) {
+                throw new Error(`Invalid date value: ${dateStr}`);
+            }
 
             return parsedDate;
         };
 
-        const startDate = fromDate ? parseDate(fromDate, true) : null;
-        const endDate = toDate ? parseDate(toDate, false) : null;
+        // Apply date filters if provided
+        try {
+            if (fromDate) filter.createdAt = { $gte: parseDate(fromDate, true) };
+            if (toDate) filter.createdAt = { ...filter.createdAt, $lte: parseDate(toDate, false) };
 
-        filter.createdAt = {};
-        if (startDate) filter.createdAt.$gte = startDate;
-        if (endDate) filter.createdAt.$lte = endDate;
+            console.log("Date Filter Applied:", filter); // Debugging log
 
-        console.log("Date Filter Applied:", filter); // Debugging log
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
-    }
-}
+                    // Fetch clients with applied filters
+        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+        res.json(clients);
+            
+        } catch (error) {
+            return res.status(400).json({ message: error.message });
+        }
 
-// Fetch records based on filter
-const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
-
-res.json(clients);
-    } catch (error) {
-        return res.status(400).json({ message: error.message });
-    }
-}
-
-// Fetch records based on filter
-const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
-
-res.json(clients);
     } catch (error) {
         console.error("Error Fetching Clients:", error);
         res.status(500).json({ message: "Server Error" });
