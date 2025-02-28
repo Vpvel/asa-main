@@ -90,14 +90,14 @@ const getClientsFilters = asyncHandler(async (req, res) => {
 
             console.log("Date Filter Applied:", filter); // Debugging log
 
-                    // Fetch clients with applied filters
-        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
-        res.json(clients);
+     
             
         } catch (error) {
             return res.status(400).json({ message: error.message });
         }
-
+               // Fetch clients with applied filters
+        const clients = await Client.find(filter).sort({ createdAt: -1 }); // Descending order
+        res.json(clients);
     } catch (error) {
         console.error("Error Fetching Clients:", error);
         res.status(500).json({ message: "Server Error" });
@@ -120,4 +120,4 @@ const deleteAll = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { createClient, getClients,getCltDtl,deleteAll,getClientsfilters}
+module.exports = { createClient, getClients,getCltDtl,deleteAll,getClientsFilters}
