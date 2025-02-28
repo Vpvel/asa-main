@@ -6,5 +6,5 @@ router.post('/client',createClient);
 router.get('/clients',getClients);
 router.get('/clientsort',getCltDtl);
 router.delete('/clientdelete',deleteAll);
-router.post('/getclientfilter',getClientsfilters);
+router.post('/getclientfilters',getClientsfilters);
 module.exports = router;
