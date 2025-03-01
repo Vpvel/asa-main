@@ -20,7 +20,7 @@ const createSchema = asyncHandler(async (req, res) => {
 
 const getPrices = asyncHandler(async(req, res)=>{
     try {
-        const prices = await Prices.find();
+        const prices = await Prices.find().sort({ createdAt: -1 }); // Sorting by createdAt in descending order
         res.json(prices);
     } catch (error) {
         console.log("Error Fetching Prices", error);
